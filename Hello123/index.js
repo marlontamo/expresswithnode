@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
+const BodyParser = require('body-parser');
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -10,7 +11,7 @@ var connection = mysql.createConnection({
 });
  
 connection.connect();
-
+app.use(BodyParser.json())
 app.use(express.json());
 
 const customers = [
@@ -21,6 +22,7 @@ const customers = [
 {id:5, name:'customer5'},
 ];
  //connect to mysql
+ //get all inserted data from mysqldb
  app.get('/orders', (req,res) =>{
   connection.query('SELECT * FROM orders', function (error, results, fields) {
     if (error) throw error;
@@ -29,16 +31,22 @@ const customers = [
  
   });
  });
+ //insertig data to mysql db
+ app.post('/orders', (req, res) => {
+    
+    connection.query("INSERT INTO orders (name, price) VALUES (?,?)", [req.body.name , req.body.price], function (err, result, fields){
+        if (err) throw err;
+        // if there is no error, you have the result
+        console.log(result);
+     });
+ });
+
 
 // listing all customers
 app.get('/api/customers', function (req, res) {
     res.send(customers);
   });
-  // app.get('/', function (req, res) {
-  //   res.setHeader("Content-Type", "text/html");
-  //   res.sendfile('index.html', {root:__dirname});
-   
-  // }
+  
 //inserting data
 app.post('/api/customer', function(req, res){
     const customer = {
