@@ -11,7 +11,9 @@ var connection = mysql.createConnection({
 });
  
 connection.connect();
-app.use(BodyParser.json())
+app.use(BodyParser.urlencoded({extended: false}));
+app.use(BodyParser.json());
+
 app.use(express.json());
 
 const customers = [
